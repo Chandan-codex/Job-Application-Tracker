@@ -45,7 +45,15 @@ const Register = () => {
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type");
+      let data;
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        throw new Error(
+          `API returned ${response.status}. Please check that VITE_API_BASE_URL is set to https://job-application-tracker-tbnw.onrender.com/api in Vercel.`
+        );
+      }
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to register");
